@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">NYTimesSearch</string>
+    <string name="search_button">Search</string>
+    <string name="search_field_edit_text">Enter search query</string>
+    <string name="image_description">Image</string>
+    <string name="search_title">Search</string>
+    <string name="filter_title">Filter</string>
+    <string name="begin_date_text">Begin Date</string>
+    <string name="sort_text">Sort Order</string>
+    <string name="news_desk_values_text">News Desk Values</string>
+    <string name="date_text">mm/dd/yyyy</string>
+    <string name="done">Done</string>
+    <string name="art_text">Arts</string>
+    <string name="fashion_text"><![CDATA[Fashion & Style]]></string>
+    <string name="sport_text">Sport</string>
+</resources>
