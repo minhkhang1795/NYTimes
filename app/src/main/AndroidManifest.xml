@@ -10,15 +10,15 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.SearchActivity">
+        <activity android:name=".Activities.SearchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.ArticleActivity" />
-        <activity android:name=".activities.FilterSettingActivity"></activity>
+        <activity android:name=".Activities.ArticleActivity" />
+        <activity android:name=".Activities.FilterSettingActivity"></activity>
     </application>
 
 </manifest>

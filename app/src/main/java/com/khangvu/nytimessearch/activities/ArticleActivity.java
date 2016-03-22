@@ -1,13 +1,13 @@
- package com.khangvu.nytimessearch.activities;
+ package com.khangvu.nytimessearch.Activities;
 
  import android.os.Bundle;
- import android.support.v7.app.AppCompatActivity;
- import android.webkit.WebView;
- import android.webkit.WebViewClient;
+import android.support.v7.app.AppCompatActivity;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
  import com.khangvu.nytimessearch.R;
 
-public class ArticleActivity extends AppCompatActivity {
+ public class ArticleActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

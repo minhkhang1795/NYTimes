@@ -1,4 +1,4 @@
-package com.khangvu.nytimessearch;
+package com.khangvu.nytimessearch.Models;
 
 import org.json.JSONArray;
 import org.json.JSONException;

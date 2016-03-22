@@ -1,4 +1,4 @@
-package com.khangvu.nytimessearch;
+package com.khangvu.nytimessearch.Adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.khangvu.nytimessearch.Models.Article;
+import com.khangvu.nytimessearch.R;
 
 import java.util.ArrayList;
 
@@ -79,23 +81,4 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         return mArticles.size();
     }
 
-//    // Clean all elements of the recycler
-//    public void clear() {
-//        mArticles.clear();
-//        notifyDataSetChanged();
-//    }
-//
-//    // Add a list of items
-//    public void addAll(ArrayList<Article> list) {
-//        mArticles.addAll(list);
-//        notifyDataSetChanged();
-//    }
-//
-//    public void append(ArrayList<Article> list) {
-//        mArticles.addAll(list);
-//        // For efficiency purposes, notify the adapter of only the elements that got changed
-//        // curSize will equal to the index of the first element inserted because the list is 0-indexed
-//        getItemCount();
-//        notifyItemRangeInserted(getItemCount(), mArticles.size() - 1);
-//    }
 }

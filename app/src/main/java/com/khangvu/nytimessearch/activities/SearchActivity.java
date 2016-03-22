@@ -1,4 +1,4 @@
-package com.khangvu.nytimessearch.activities;
+package com.khangvu.nytimessearch.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,13 +13,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
-import com.khangvu.nytimessearch.Article;
+import com.khangvu.nytimessearch.Adapters.SearchAdapter;
 import com.khangvu.nytimessearch.EndlessRecyclerViewScrollListener;
 import com.khangvu.nytimessearch.ItemClickSupport;
+import com.khangvu.nytimessearch.Models.Article;
+import com.khangvu.nytimessearch.Models.Query;
 import com.khangvu.nytimessearch.R;
-import com.khangvu.nytimessearch.SearchAdapter;
 import com.khangvu.nytimessearch.SpaceItemDecoration;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -35,34 +35,33 @@ import cz.msebera.android.httpclient.Header;
 
 public class SearchActivity extends AppCompatActivity {
 
-    Button mSearchButton;
-    SearchAdapter mAdapter;
-    ArrayList<Article> mArticles;
-    RecyclerView articlesRecyclerView;
-    String mCurrentQuery = null;
+    private Button mSearchButton;
+    private SearchAdapter mAdapter;
+    private ArrayList<Article> mArticles;
+    private RecyclerView mArticlesRecyclerView;
+    StaggeredGridLayoutManager staggeredGridLayoutManager =
+            new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+    Query mCurrentQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+        mArticles = new ArrayList<>();
+        mCurrentQuery = new Query();
         setUpView();
-        RequestParams params = new RequestParams();
-        getInitialDataWithParams(params);
+        getInitialDataWithParams(mCurrentQuery.getParams());
     }
 
     public void setUpView() {
         mSearchButton = (Button) findViewById(R.id.search_button);
-        articlesRecyclerView = (RecyclerView) findViewById(R.id.article_recycler_view);
-        mArticles = new ArrayList<>();
+        mArticlesRecyclerView = (RecyclerView) findViewById(R.id.article_recycler_view);
         mAdapter = new SearchAdapter(mArticles);
-        assert articlesRecyclerView != null;
-        articlesRecyclerView.setAdapter(mAdapter);
-        StaggeredGridLayoutManager staggeredGridLayoutManager =
-                new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        articlesRecyclerView.setLayoutManager(staggeredGridLayoutManager);
+        mArticlesRecyclerView.setAdapter(mAdapter);
+        mArticlesRecyclerView.setLayoutManager(staggeredGridLayoutManager);
         RecyclerView.ItemDecoration decoration = new SpaceItemDecoration(12);
-        articlesRecyclerView.addItemDecoration(decoration);
-        ItemClickSupport.addTo(articlesRecyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+        mArticlesRecyclerView.addItemDecoration(decoration);
+        ItemClickSupport.addTo(mArticlesRecyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
                 Intent i = new Intent(getApplicationContext(), ArticleActivity.class);
@@ -71,7 +70,7 @@ public class SearchActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
-        articlesRecyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(staggeredGridLayoutManager) {
+        mArticlesRecyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(staggeredGridLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
                 customLoadMoreDataFromApi(page);
@@ -123,9 +122,9 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 RequestParams params = new RequestParams();
-                mCurrentQuery = query;
-                params.put("q", query);
-                getInitialDataWithParams(params);
+                mCurrentQuery.query = query;
+                mCurrentQuery.page = 0;
+                getInitialDataWithParams(mCurrentQuery.getParams());
                 searchView.clearFocus();
                 return true;
             }
@@ -139,7 +138,11 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     public void showFilterSetting(MenuItem item) {
-        Intent i = new Intent(getApplicationContext(), FilterSettingActivity.class);
+        Intent i = new Intent(this, FilterSettingActivity.class);
+//        Bundle b = new Bundle();
+//        //pass the country object as a parcel
+//        b.putParcelable("query", mCurrentQuery);
+        i.putExtra("query", mCurrentQuery);
         startActivityForResult(i, 200);
     }
 
@@ -148,33 +151,27 @@ public class SearchActivity extends AppCompatActivity {
         // REQUEST_CODE is defined above
         if (resultCode == RESULT_OK && requestCode == 200) {
             // Extract name value from result extras
-            RequestParams params = new RequestParams();
-            params.put("sort", data.getExtras().getString("sortString"));
-            params.put("sort", data.getExtras().getString("sortString"));
-            int code = data.getExtras().getInt("code", 0);
-            // Toast the name to display temporarily on screen
-            Toast.makeText(this, name, Toast.LENGTH_SHORT).show();
+            Bundle bundle = data.getExtras();
+            mCurrentQuery = bundle.getParcelable("query_back");
+            mCurrentQuery.page = 0;
+            getInitialDataWithParams(mCurrentQuery.getParams());
         }
     }
 
     public void getInitialDataWithParams(RequestParams params) {
-        params.put("api-key", "892b87ac6fd48069993780e61a589da6:6:70163452");
-        params.put("page", 0);
         AsyncHttpClient client = new AsyncHttpClient();
         String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
+        mArticles.clear();
+        mAdapter.notifyDataSetChanged();
         client.get(url, params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Log.d("DEBUG-SUCCEEDED", response.toString());
                 JSONArray articleJsonResults = null;
                 try {
                     articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
-                    mArticles.clear();
-                    mAdapter.notifyDataSetChanged();
                     mArticles.addAll(Article.fromJSONArray(articleJsonResults));
                     mAdapter.notifyDataSetChanged();
-                    articlesRecyclerView.scrollToPosition(0);
-                    Log.d("DEBUG-SUCCEEDED", mArticles.toString());
+                    staggeredGridLayoutManager.scrollToPositionWithOffset(0, 40);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -190,15 +187,10 @@ public class SearchActivity extends AppCompatActivity {
     // Append more data into the adapter
     // This method probably sends out a network request and appends new data items to your adapter.
     public void customLoadMoreDataFromApi(int offset) {
-        // Send an API request to retrieve appropriate data using the offset value as a parameter.
-        // Deserialize API response and then construct new objects to append to the adapter
-        // Add the new objects to the data source for the adapter
-        final ArrayList<Article> moreItems = new ArrayList<>();
-        RequestParams params = new RequestParams();
-        params.put("api-key", "892b87ac6fd48069993780e61a589da6:6:70163452");
-        params.put("page", offset);
-        if (mCurrentQuery != null) params.put("q", mCurrentQuery);
+        mCurrentQuery.page = offset;
+        RequestParams params = mCurrentQuery.getParams();
 
+        final ArrayList<Article> moreItems = new ArrayList<>();
         AsyncHttpClient client = new AsyncHttpClient();
         String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
         client.get(url, params, new JsonHttpResponseHandler() {
