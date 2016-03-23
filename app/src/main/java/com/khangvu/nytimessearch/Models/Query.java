@@ -8,6 +8,7 @@ import com.loopj.android.http.RequestParams;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * Created by duyvu on 3/21/16.
@@ -43,7 +44,7 @@ public class Query implements Parcelable {
 
     // Advanced Search
     public String sort;        // newest | oldest
-    public Calendar beginDateCalendar;
+    public GregorianCalendar beginDateCalendar;
     public String beginDateString;  // YYYYMMDD
     public String news_desk;   // &fq=news_desk:("Sports" "Foreign")
     public ArrayList<String> desks;
@@ -55,14 +56,11 @@ public class Query implements Parcelable {
         this.beginDateString = "";
         this.news_desk = "";
         this.desks = new ArrayList<>();
+        this.beginDateCalendar = new GregorianCalendar(Calendar.YEAR, Calendar.MONTH, Calendar.DATE);
     }
 
     public void onDateSet(int year, int monthOfYear, int dayOfMonth) {
-        this.beginDateCalendar = Calendar.getInstance();
-        // store the values selected into a Calendar instance
-        this.beginDateCalendar.set(Calendar.YEAR, year);
-        this.beginDateCalendar.set(Calendar.MONTH, monthOfYear);
-        this.beginDateCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        this.beginDateCalendar = new GregorianCalendar(year, monthOfYear, dayOfMonth);
         this.beginDateString = FORMAT.format(this.beginDateCalendar.getTime());
     }
 
@@ -126,7 +124,7 @@ public class Query implements Parcelable {
         this.page = in.readInt();
         this.query = in.readString();
         this.sort = in.readString();
-        this.beginDateCalendar = (Calendar) in.readSerializable();
+        this.beginDateCalendar = (GregorianCalendar) in.readSerializable();
         this.beginDateString = in.readString();
         this.news_desk = in.readString();
         this.desks = in.createStringArrayList();

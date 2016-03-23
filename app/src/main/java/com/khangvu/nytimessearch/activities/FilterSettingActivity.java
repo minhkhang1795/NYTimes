@@ -1,5 +1,6 @@
 package com.khangvu.nytimessearch.Activities;
 
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,22 +11,34 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.Spinner;
+import android.widget.TextView;
 
+import com.khangvu.nytimessearch.Fragments.DatePickerFragment;
 import com.khangvu.nytimessearch.Models.Query;
 import com.khangvu.nytimessearch.R;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 public class FilterSettingActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     Query mCurrentQuery;
-    Spinner mSortSpinner;
-    CheckBox mCheckBox1, mCheckBox2, mCheckBox3;
+    @Bind(R.id.spinner) Spinner mSortSpinner;
+    @Bind(R.id.date_edit_text) TextView mDateEditText;
+    @Bind(R.id.check_box_1) CheckBox mCheckBox1;
+    @Bind(R.id.check_box_2) CheckBox mCheckBox2;
+    @Bind(R.id.check_box_3) CheckBox mCheckBox3;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter_setting);
+        ButterKnife.bind(this);
+
         Bundle bundle = this.getIntent().getExtras();
         mCurrentQuery = bundle.getParcelable("query");
 
@@ -37,23 +50,32 @@ public class FilterSettingActivity extends AppCompatActivity implements AdapterV
     }
 
     public void setUpDatePicker() {
-
+        mDateEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                //Create a bundle to pass the date
+                Bundle inputDate = new Bundle();
+                if (mCurrentQuery.beginDateCalendar != null) {
+                    inputDate.putInt("date", mCurrentQuery.beginDateCalendar.get(Calendar.DATE));
+                    inputDate.putInt("month", mCurrentQuery.beginDateCalendar.get(Calendar.MONTH));
+                    inputDate.putInt("year", mCurrentQuery.beginDateCalendar.get(Calendar.YEAR));
+                }
+                //Pass the bundle to the fragment
+                DialogFragment newFragment = new DatePickerFragment();
+                newFragment.setArguments(inputDate);
+                newFragment.show(getFragmentManager(), "DatePicker");
+            }
+        });
     }
 
     public void setUpCheckBox() {
-        mCheckBox1 = (CheckBox) findViewById(R.id.check_box_1);
-        mCheckBox2 = (CheckBox) findViewById(R.id.check_box_2);
-        mCheckBox3 = (CheckBox) findViewById(R.id.check_box_3);
-
         if (mCurrentQuery.desks.contains("Arts")) mCheckBox1.setChecked(true);
         if (mCurrentQuery.desks.contains("Fashion & Style")) mCheckBox2.setChecked(true);
         if (mCurrentQuery.desks.contains("Sports")) mCheckBox3.setChecked(true);
     }
 
     public void setUpSortSpinner() {
-        mSortSpinner = (Spinner) findViewById(R.id.spinner);
         // Spinner click listener
-        assert mSortSpinner != null;
         mSortSpinner.setOnItemSelectedListener(this);
         // Spinner Drop down elements
         List<String> categories = new ArrayList<String>();

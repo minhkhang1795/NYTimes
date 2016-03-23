@@ -12,7 +12,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 
 import com.khangvu.nytimessearch.Adapters.SearchAdapter;
 import com.khangvu.nytimessearch.EndlessRecyclerViewScrollListener;
@@ -31,14 +30,15 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
 public class SearchActivity extends AppCompatActivity {
 
-    private Button mSearchButton;
     private SearchAdapter mAdapter;
     private ArrayList<Article> mArticles;
-    private RecyclerView mArticlesRecyclerView;
+    @Bind(R.id.article_recycler_view) RecyclerView mArticlesRecyclerView;
     StaggeredGridLayoutManager staggeredGridLayoutManager =
             new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
     Query mCurrentQuery;
@@ -47,6 +47,8 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+        ButterKnife.bind(this);
+
         mArticles = new ArrayList<>();
         mCurrentQuery = new Query();
         setUpView();
@@ -54,8 +56,6 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     public void setUpView() {
-        mSearchButton = (Button) findViewById(R.id.search_button);
-        mArticlesRecyclerView = (RecyclerView) findViewById(R.id.article_recycler_view);
         mAdapter = new SearchAdapter(mArticles);
         mArticlesRecyclerView.setAdapter(mAdapter);
         mArticlesRecyclerView.setLayoutManager(staggeredGridLayoutManager);
