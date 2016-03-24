@@ -13,4 +13,5 @@
     <string name="art_text">Arts</string>
     <string name="fashion_text"><![CDATA[Fashion & Style]]></string>
     <string name="sport_text">Sports</string>
+    <string name="share">Share</string>
 </resources>

@@ -27,11 +27,16 @@ import butterknife.ButterKnife;
 public class FilterSettingActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     public Query mCurrentQuery;
-    @Bind(R.id.spinner) Spinner mSortSpinner;
-    @Bind(R.id.date_edit_text) TextView mDateEditText;
-    @Bind(R.id.check_box_1) CheckBox mCheckBox1;
-    @Bind(R.id.check_box_2) CheckBox mCheckBox2;
-    @Bind(R.id.check_box_3) CheckBox mCheckBox3;
+    @Bind(R.id.spinner)
+    Spinner mSortSpinner;
+    @Bind(R.id.date_edit_text)
+    TextView mDateEditText;
+    @Bind(R.id.check_box_1)
+    CheckBox mCheckBox1;
+    @Bind(R.id.check_box_2)
+    CheckBox mCheckBox2;
+    @Bind(R.id.check_box_3)
+    CheckBox mCheckBox3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

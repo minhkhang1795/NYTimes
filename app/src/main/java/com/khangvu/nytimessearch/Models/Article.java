@@ -15,6 +15,16 @@ public class Article {
     private String mHeadline;
     private String mThumbNail;
 
+    public String getmSnippet() {
+        return mSnippet;
+    }
+
+    public void setmSnippet(String mSnippet) {
+        this.mSnippet = mSnippet;
+    }
+
+    private String mSnippet;
+
     public String getmWebUrl() {
         return mWebUrl;
     }
@@ -43,6 +53,7 @@ public class Article {
         try {
             this.mWebUrl = jsonObject.getString("web_url");
             this.mHeadline = jsonObject.getJSONObject("headline").getString("main");
+            this.mSnippet = jsonObject.getString("snippet");
 
             JSONArray multimedia = jsonObject.getJSONArray("multimedia");
             if (multimedia.length() > 0) {

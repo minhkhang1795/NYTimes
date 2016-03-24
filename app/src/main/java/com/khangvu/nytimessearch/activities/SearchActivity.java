@@ -1,9 +1,6 @@
 package com.khangvu.nytimessearch.Activities;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -32,6 +29,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import butterknife.Bind;
@@ -40,12 +38,14 @@ import cz.msebera.android.httpclient.Header;
 
 public class SearchActivity extends AppCompatActivity {
 
-    private SearchAdapter mAdapter;
-    private ArrayList<Article> mArticles;
-    @Bind(R.id.article_recycler_view) RecyclerView mArticlesRecyclerView;
+    private ArrayList<Article> mArticles = new ArrayList<>();
+    ;
+    private SearchAdapter mAdapter = new SearchAdapter(mArticles);
+    @Bind(R.id.article_recycler_view)
+    RecyclerView mArticlesRecyclerView;
     StaggeredGridLayoutManager staggeredGridLayoutManager =
             new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-    Query mCurrentQuery;
+    Query mCurrentQuery = new Query();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +53,6 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
         ButterKnife.bind(this);
 
-        mArticles = new ArrayList<>();
-        mCurrentQuery = new Query();
         setUpView();
         mArticles.clear();
         mAdapter.notifyDataSetChanged();
@@ -62,7 +60,6 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     public void setUpView() {
-        mAdapter = new SearchAdapter(mArticles);
         mArticlesRecyclerView.setAdapter(mAdapter);
         mArticlesRecyclerView.setLayoutManager(staggeredGridLayoutManager);
         RecyclerView.ItemDecoration decoration = new SpaceItemDecoration(12);
@@ -89,7 +86,8 @@ public class SearchActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
-        MenuItem searchItem = menu.findItem(R.id.action_search);
+
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -125,7 +123,7 @@ public class SearchActivity extends AppCompatActivity {
             // Extract name value from result extras
             Bundle bundle = data.getExtras();
             mCurrentQuery = bundle.getParcelable("query_back");
-            mCurrentQuery.page = 0;
+            if (mCurrentQuery != null) mCurrentQuery.page = 0;
             mArticles.clear();
             mAdapter.notifyDataSetChanged();
             getDataWithParams(mCurrentQuery.getParams());
@@ -133,9 +131,9 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     public void getDataWithParams(RequestParams params) {
-        AsyncHttpClient client = new AsyncHttpClient();
-        String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
         if (isNetworkAvailable()) {
+            AsyncHttpClient client = new AsyncHttpClient();
+            String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
             client.get(url, params, new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -160,11 +158,15 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private Boolean isNetworkAvailable() {
-        ConnectivityManager cm =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        return activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            int exitValue = ipProcess.waitFor();
+            return (exitValue == 0);
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 
