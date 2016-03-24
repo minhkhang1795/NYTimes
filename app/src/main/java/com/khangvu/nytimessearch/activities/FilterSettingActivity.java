@@ -26,7 +26,7 @@ import butterknife.ButterKnife;
 
 public class FilterSettingActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    Query mCurrentQuery;
+    public Query mCurrentQuery;
     @Bind(R.id.spinner) Spinner mSortSpinner;
     @Bind(R.id.date_edit_text) TextView mDateEditText;
     @Bind(R.id.check_box_1) CheckBox mCheckBox1;
@@ -50,19 +50,21 @@ public class FilterSettingActivity extends AppCompatActivity implements AdapterV
     }
 
     public void setUpDatePicker() {
+        if (mCurrentQuery.beginDateCalendar != null) {
+            int month = mCurrentQuery.beginDateCalendar.get(Calendar.MONTH) + 1;
+            int day = mCurrentQuery.beginDateCalendar.get(Calendar.DAY_OF_MONTH);
+            int year = mCurrentQuery.beginDateCalendar.get(Calendar.YEAR);
+            mDateEditText.setText(month + "/" + day + "/" + year);
+        }
         mDateEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
                 //Create a bundle to pass the date
-                Bundle inputDate = new Bundle();
-                if (mCurrentQuery.beginDateCalendar != null) {
-                    inputDate.putInt("date", mCurrentQuery.beginDateCalendar.get(Calendar.DATE));
-                    inputDate.putInt("month", mCurrentQuery.beginDateCalendar.get(Calendar.MONTH));
-                    inputDate.putInt("year", mCurrentQuery.beginDateCalendar.get(Calendar.YEAR));
-                }
+                Bundle arg = new Bundle();
+                arg.putParcelable("query", mCurrentQuery);
                 //Pass the bundle to the fragment
                 DialogFragment newFragment = new DatePickerFragment();
-                newFragment.setArguments(inputDate);
+                newFragment.setArguments(arg);
                 newFragment.show(getFragmentManager(), "DatePicker");
             }
         });
@@ -139,9 +141,6 @@ public class FilterSettingActivity extends AppCompatActivity implements AdapterV
                 return true;
             case R.id.done_menu_item:
                 Intent data = new Intent();
-                // Date Begin
-
-
                 // Desk Values
                 if (mCheckBox1.isChecked())
                     mCurrentQuery.desks.add("Arts");

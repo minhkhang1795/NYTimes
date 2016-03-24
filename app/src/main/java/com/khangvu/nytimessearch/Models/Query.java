@@ -56,7 +56,10 @@ public class Query implements Parcelable {
         this.beginDateString = "";
         this.news_desk = "";
         this.desks = new ArrayList<>();
-        this.beginDateCalendar = new GregorianCalendar(Calendar.YEAR, Calendar.MONTH, Calendar.DATE);
+        final Calendar calendar = Calendar.getInstance();
+//                calendar.get(Calendar.YEAR),
+//                calendar.get(Calendar.MONTH),
+//                calendar.get(Calendar.DAY_OF_MONTH));
     }
 
     public void onDateSet(int year, int monthOfYear, int dayOfMonth) {
