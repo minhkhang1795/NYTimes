@@ -43,7 +43,7 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-<img src='https://github.com/vuminhkhang1995/NYTimes/blob/master/NYTimes%20-%20Android.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='https://github.com/vuminhkhang1995/NYTimes/blob/master/NYTimes%20-%20Android%202.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
